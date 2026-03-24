@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: dispute-triage-agent
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  gson:
+    lenient: true
+
+langchain4j:
+  ollama:
+    chat-model:
+      base-url: http://localhost:11434 #ollama default local port
+      model-name: llama3.2:1b
+      temperature: 0.0
+      format: json
+      log-requests: true
+      log-responses: true
+
