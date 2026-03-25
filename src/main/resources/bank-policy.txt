@@ -1,0 +1,6 @@
+Bank of Leeds - Dispute Resolution Policy (2025)
+Section 1.4: Transportation Disputes.
+Any dispute involving a ride-sharing service (e.g., Uber, Lyft) where the customer claims they did not take the ride, but the GPS location of the transaction matches the customer's home city, will be subject to a mandatory 5-day investigation hold. If the transaction occurred outside the customer's home city, and the customer cannot provide travel receipts, the dispute will be immediately flagged as high risk.
+
+Section 2.1: Appeals.
+Customers have 14 days to appeal a HIGH_PROBABILITY_FRAUD decision by calling the fraud hotline at 0800-111-2222.

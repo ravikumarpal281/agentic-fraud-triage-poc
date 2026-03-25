@@ -30,7 +30,7 @@ public class DisputeController {
             // 1. Set the ID in the ThreadLocal context
             CustomerContext.setCustomerId(customerId);
             // 1. The Agent evaluates the dispute (It will pause here to call your @Tools)
-            DisputeDecision decision = agent.evaluateDispute(message);
+            DisputeDecision decision = agent.evaluateDispute(customerId,message);
 
             // Type safety in action: You can now do things like this safely:
             if (decision.status().equals("HIGH_PROBABILITY_FRAUD")) {

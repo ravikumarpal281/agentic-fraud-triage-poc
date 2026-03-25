@@ -8,16 +8,18 @@ import org.springframework.stereotype.Component;
 public class BankingTools {
 
     @Tool("Fetches the home city and profile for the current customer.")
-    public String getCustomerProfile() { // NO PARAMETERS NEEDED!
+    public String getCustomerProfile() {
         String customerId = CustomerContext.getCustomerId();
         System.out.println("🔧 AI TOOL CALLED: Fetching profile for " + customerId);
-        return "{ \"customerId\": \"" + customerId + "\", \"homeCity\": \"Leeds, UK\" }";
+        // Return clear plaintext, NOT JSON!
+        return "FACT: The customer's authorized home city is Leeds, UK.";
     }
 
     @Tool("Fetches the recent transaction history for the current customer.")
-    public String getTransactionHistory() { // NO PARAMETERS NEEDED!
+    public String getTransactionHistory() {
         String customerId = CustomerContext.getCustomerId();
         System.out.println("🔧 AI TOOL CALLED: Fetching transactions for " + customerId);
-        return "[{ \"date\": \"2023-10-25\", \"merchant\": \"Uber\", \"amount\": 45.00, \"location\": \"London, UK\" }]";
+        // Return clear plaintext, NOT JSON!
+        return "FACT: The transaction occurred in London, UK at merchant Uber.";
     }
 }
