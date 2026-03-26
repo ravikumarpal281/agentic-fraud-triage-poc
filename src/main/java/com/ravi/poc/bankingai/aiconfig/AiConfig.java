@@ -38,30 +38,31 @@ public class AiConfig {
                 .build();
     }
 
-    // 2. Configure the RAG Content Retriever
-    @Bean
-    public ContentRetriever contentRetriever(EmbeddingModel embeddingModel) throws URISyntaxException {
-        // Create an in-memory vector database
-        EmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
-
-        // Load your bank policy document
-        Path documentPath = Paths.get(Objects.requireNonNull(getClass().getResource("/bank-policy.txt")).toURI());
-        Document document = FileSystemDocumentLoader.loadDocument(documentPath, new TextDocumentParser());
-
-        // LangChain4j's utility to automatically split the document, embed it, and store it
-        dev.langchain4j.store.embedding.EmbeddingStoreIngestor.builder()
-                .documentSplitter(dev.langchain4j.data.document.splitter.DocumentSplitters.recursive(300, 50))
-                .embeddingModel(embeddingModel)
-                .embeddingStore(embeddingStore)
-                .build()
-                .ingest(document);
-
-        // Return the retriever that the AI Agent will use to search the database
-        return EmbeddingStoreContentRetriever.builder()
-                .embeddingStore(embeddingStore)
-                .embeddingModel(embeddingModel)
-                .maxResults(2) // Fetch the top 2 most relevant paragraphs
-                .minScore(0.6) // Minimum similarity score
-                .build();
-    }
+    //stop Spring Boot from automatically shoving the massive text file into the prompt, to implement Agentic RAG
+    // 2. Configure the  Implicit RAG Content Retriever
+//    @Bean
+//    public ContentRetriever contentRetriever(EmbeddingModel embeddingModel) throws URISyntaxException {
+//        // Create an in-memory vector database
+//        EmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
+//
+//        // Load your bank policy document
+//        Path documentPath = Paths.get(Objects.requireNonNull(getClass().getResource("/bank-policy.txt")).toURI());
+//        Document document = FileSystemDocumentLoader.loadDocument(documentPath, new TextDocumentParser());
+//
+//        // LangChain4j's utility to automatically split the document, embed it, and store it
+//        dev.langchain4j.store.embedding.EmbeddingStoreIngestor.builder()
+//                .documentSplitter(dev.langchain4j.data.document.splitter.DocumentSplitters.recursive(300, 50))
+//                .embeddingModel(embeddingModel)
+//                .embeddingStore(embeddingStore)
+//                .build()
+//                .ingest(document);
+//
+//        // Return the retriever that the AI Agent will use to search the database
+//        return EmbeddingStoreContentRetriever.builder()
+//                .embeddingStore(embeddingStore)
+//                .embeddingModel(embeddingModel)
+//                .maxResults(2) // Fetch the top 2 most relevant paragraphs
+//                .minScore(0.6) // Minimum similarity score
+//                .build();
+//    }
 }

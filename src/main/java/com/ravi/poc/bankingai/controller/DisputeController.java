@@ -1,7 +1,7 @@
 package com.ravi.poc.bankingai.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ravi.poc.bankingai.aiconfig.JsonFormatterAgent;
 import com.ravi.poc.bankingai.controller.agentconfig.CustomerContext;
 import com.ravi.poc.bankingai.controller.agentconfig.CustomerServiceAgent;
 import com.ravi.poc.bankingai.models.DisputeDecision;
@@ -14,36 +14,39 @@ public class DisputeController {
     private final CustomerServiceAgent agent;
     private final RabbitTemplate rabbitTemplate;
     private final ObjectMapper objectMapper;
+    private final JsonFormatterAgent formatterAgent;
 
-    public DisputeController(CustomerServiceAgent agent, RabbitTemplate rabbitTemplate) {
+    public DisputeController(CustomerServiceAgent agent, RabbitTemplate rabbitTemplate, JsonFormatterAgent formatterAgent) {
         this.agent = agent;
         this.rabbitTemplate = rabbitTemplate;
+        this.formatterAgent = formatterAgent;
         this.objectMapper = new ObjectMapper();
     }
 
     @PostMapping
-    public String submitDispute(@RequestParam String customerId, @RequestBody String message) throws JsonProcessingException {
-        System.out.println("Recieved dispute for customer" + customerId);
-        System.out.println("Msg dispute for customer" + message);
+    public String submitDispute(@RequestParam String customerId, @RequestBody String message) throws Exception {
+        System.out.println("📥 Received dispute for customer: " + customerId);
 
         try {
-            // 1. Set the ID in the ThreadLocal context
             CustomerContext.setCustomerId(customerId);
-            // 1. The Agent evaluates the dispute (It will pause here to call your @Tools)
-            DisputeDecision decision = agent.evaluateDispute(customerId,message);
 
-            // Type safety in action: You can now do things like this safely:
-            if (decision.status().equals("HIGH_PROBABILITY_FRAUD")) {
-                System.out.println("🚨 RED ALERT for " + customerId + ": " + decision.reasoning());
-            }
+            // 1. Agent 1 runs the tools and writes a text report
+            System.out.println("🧠 Step 1: Investigator Agent starting ReAct loop...");
+            String investigationReport = agent.investigateDispute(customerId, message);
+            System.out.println("📄 Investigation Report Generated.");
 
-            // 2. Convert the Object back to JSON for the RabbitMQ event payload
+            // 2. Agent 2 converts the text report into strict JSON
+            System.out.println("⚙️ Step 2: Formatter Agent extracting JSON...");
+            DisputeDecision decision = formatterAgent.extractDecision(investigationReport);
+
+            // 3. Publish to RabbitMQ
             String jsonPayload = objectMapper.writeValueAsString(decision);
             rabbitTemplate.convertAndSend("dispute_routing_queue", jsonPayload);
+            System.out.println("🐇 Event published to RabbitMQ!");
 
-            return "Dispute recieved and is being processed";
+            return "Dispute received. Current Status: " + decision.status();
+
         } finally {
-            // 4. ALWAYS clear the ThreadLocal to prevent data bleeding between HTTP requests
             CustomerContext.clear();
         }
     }
